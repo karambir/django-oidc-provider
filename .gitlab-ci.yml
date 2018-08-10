@@ -1,0 +1,12 @@
+image: python:3.5
+
+cache:
+  paths:
+    - .tox
+
+before_script:
+  - pip install tox coverage
+
+test:
+  stage: test
+  script: tox -e py35-django111
