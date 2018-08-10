@@ -148,9 +148,10 @@ class TokenEndpoint(object):
     def create_code_response_dic(self):
         # See https://tools.ietf.org/html/rfc6749#section-4.1
         session_key = None
-        if self.code and self.code.session:
-            session_key = self.code.session
-        self.request.session['sid'] = session_key
+        if getattr(self.request, 'session', None):
+            if self.request.session.session_key:
+                session_key = self.request.session.session_key
+            self.request.session['sid'] = session_key
 
         token = create_token(
             user=self.code.user,
@@ -199,9 +200,10 @@ class TokenEndpoint(object):
             raise TokenError('invalid_scope')
 
         session_key = None
-        if self.token and self.token.session:
-            session_key = self.token.session
-        self.request.session['sid'] = session_key
+        if getattr(self.request, 'session', None):
+            if self.request.session.session_key:
+                session_key = self.request.session.session_key
+            self.request.session['sid'] = session_key
 
         token = create_token(
             user=self.token.user,
@@ -245,9 +247,10 @@ class TokenEndpoint(object):
         # See https://tools.ietf.org/html/rfc6749#section-4.3
 
         session_key = None
-        if self.code and self.code.session:
-            session_key = self.code.session
-        self.request.session['sid'] = session_key
+        if getattr(self.request, 'session', None):
+            if self.request.session.session_key:
+                session_key = self.request.session.session_key
+            self.request.session['sid'] = session_key
 
         token = create_token(
             self.user,

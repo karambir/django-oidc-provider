@@ -80,6 +80,7 @@ class TokenTest(TestCase):
             'exp': iat + 600,
             'iat': iat,
             'iss': 'http://localhost:8000/openid',
+            'sid': None,
             'sub': str(self.user.id),
         })
 

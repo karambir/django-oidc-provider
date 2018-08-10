@@ -130,9 +130,10 @@ class AuthorizeEndpoint(object):
         query_fragment = {}
 
         session_key = None
-        if self.request.session and self.request.session.session_key:
-            session_key = self.request.session.session_key
-        self.request.session['sid'] = session_key
+        if getattr(self.request, 'session', None):
+            if self.request.session.session_key:
+                session_key = self.request.session.session_key
+            self.request.session['sid'] = session_key
 
         try:
             if self.grant_type in ['authorization_code', 'hybrid']:
