@@ -129,6 +129,11 @@ class AuthorizeEndpoint(object):
         query_params = parse_qs(uri.query)
         query_fragment = {}
 
+        session_key = None
+        if self.request.session and self.request.session.session_key:
+            session_key = self.request.session.session_key
+        self.request.session['sid'] = session_key
+
         try:
             if self.grant_type in ['authorization_code', 'hybrid']:
                 code = create_code(
@@ -148,7 +153,8 @@ class AuthorizeEndpoint(object):
                 token = create_token(
                     user=self.request.user,
                     client=self.client,
-                    scope=self.params['scope'])
+                    scope=self.params['scope'],
+                    session_key=session_key)
 
                 # Check if response_type must include access_token in the response.
                 if (self.params['response_type'] in
@@ -164,6 +170,7 @@ class AuthorizeEndpoint(object):
                         'nonce': self.params['nonce'],
                         'request': self.request,
                         'scope': self.params['scope'],
+                        'sid': token.session,
                     }
                     # Include at_hash when access_token is being returned.
                     if 'access_token' in query_fragment:

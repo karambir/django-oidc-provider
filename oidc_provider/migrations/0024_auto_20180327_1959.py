@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('oidc_provider', '0023_client_owner'),
+        ('oidc_provider', '0025_client_backchannel_logout_uri'),
     ]
 
     operations = [

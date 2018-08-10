@@ -147,11 +147,16 @@ class TokenEndpoint(object):
 
     def create_code_response_dic(self):
         # See https://tools.ietf.org/html/rfc6749#section-4.1
+        session_key = None
+        if self.code and self.code.session:
+            session_key = self.code.session
+        self.request.session['sid'] = session_key
 
         token = create_token(
             user=self.code.user,
             client=self.code.client,
-            scope=self.code.scope)
+            scope=self.code.scope,
+            session_key=session_key)
 
         if self.code.is_authentication:
             id_token_dic = create_id_token(
@@ -162,6 +167,7 @@ class TokenEndpoint(object):
                 at_hash=token.at_hash,
                 request=self.request,
                 scope=token.scope,
+                sid=token.session,
             )
         else:
             id_token_dic = {}
@@ -192,10 +198,16 @@ class TokenEndpoint(object):
         if unauthorized_scopes:
             raise TokenError('invalid_scope')
 
+        session_key = None
+        if self.token and self.token.session:
+            session_key = self.token.session
+        self.request.session['sid'] = session_key
+
         token = create_token(
             user=self.token.user,
             client=self.token.client,
-            scope=scope)
+            scope=scope,
+            session_key=session_key)
 
         # If the Token has an id_token it's an Authentication request.
         if self.token.id_token:
@@ -207,6 +219,7 @@ class TokenEndpoint(object):
                 at_hash=token.at_hash,
                 request=self.request,
                 scope=token.scope,
+                sid=token.session,
             )
         else:
             id_token_dic = {}
@@ -231,10 +244,16 @@ class TokenEndpoint(object):
     def create_access_token_response_dic(self):
         # See https://tools.ietf.org/html/rfc6749#section-4.3
 
+        session_key = None
+        if self.code and self.code.session:
+            session_key = self.code.session
+        self.request.session['sid'] = session_key
+
         token = create_token(
             self.user,
             self.client,
-            self.params['scope'].split(' '))
+            self.params['scope'].split(' '),
+            session_key=session_key)
 
         id_token_dic = create_id_token(
             token=token,
@@ -244,6 +263,7 @@ class TokenEndpoint(object):
             at_hash=token.at_hash,
             request=self.request,
             scope=token.scope,
+            sid=token.session,
         )
 
         token.id_token = id_token_dic

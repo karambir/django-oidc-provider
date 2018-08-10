@@ -19,7 +19,7 @@ from oidc_provider.models import (
 from oidc_provider import settings
 
 
-def create_id_token(token, user, aud, nonce='', at_hash='', request=None, scope=None):
+def create_id_token(token, user, aud, nonce='', at_hash='', request=None, scope=None, sid=None):
     """
     Creates the id_token dictionary.
     See: http://openid.net/specs/openid-connect-core-1_0.html#IDToken
@@ -45,6 +45,7 @@ def create_id_token(token, user, aud, nonce='', at_hash='', request=None, scope=
         'exp': exp_time,
         'iat': iat_time,
         'auth_time': auth_time,
+        'sid': sid,
     }
 
     if nonce:
@@ -102,7 +103,7 @@ def client_id_from_id_token(id_token):
     return aud
 
 
-def create_token(user, client, scope, id_token_dic=None):
+def create_token(user, client, scope, id_token_dic=None, session_key=None):
     """
     Create and populate a Token object.
     Return a Token object.
@@ -111,6 +112,7 @@ def create_token(user, client, scope, id_token_dic=None):
     token.user = user
     token.client = client
     token.access_token = uuid.uuid4().hex
+    token.session = session_key
 
     if id_token_dic is not None:
         token.id_token = id_token_dic
@@ -124,7 +126,8 @@ def create_token(user, client, scope, id_token_dic=None):
 
 
 def create_code(user, client, scope, nonce, is_authentication,
-                code_challenge=None, code_challenge_method=None):
+                code_challenge=None, code_challenge_method=None,
+                session_key=None):
     """
     Create and populate a Code object.
     Return a Code object.
@@ -132,6 +135,7 @@ def create_code(user, client, scope, nonce, is_authentication,
     code = Code()
     code.user = user
     code.client = client
+    code.session = session_key
 
     code.code = uuid.uuid4().hex
 

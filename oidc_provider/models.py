@@ -88,6 +88,12 @@ class Client(models.Model):
         default='',
         verbose_name=_(u'Scopes'),
         help_text=_('Specifies the authorized scope values for the client app.'))
+    backchannel_logout_uri = models.URLField(
+        blank=True,
+        max_length=255,
+        verbose_name=_(u'Back Channel Logout URI'),
+        help_text=_(u'If RP supports back channel logout, enter that uri here.')
+    )
 
     class Meta:
         verbose_name = _(u'Client')
@@ -133,6 +139,7 @@ class BaseCodeTokenModel(models.Model):
     client = models.ForeignKey(Client, verbose_name=_(u'Client'), on_delete=models.CASCADE)
     expires_at = models.DateTimeField(verbose_name=_(u'Expiration Date'))
     _scope = models.TextField(default='', verbose_name=_(u'Scopes'))
+    session = models.CharField(max_length=128, null=True, blank=True)
 
     class Meta:
         abstract = True
