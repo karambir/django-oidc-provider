@@ -7,6 +7,12 @@ cache:
 before_script:
   - pip install tox coverage
 
-test:
+py35:
   stage: test
+  image: python:3.5
   script: tox -e py35-django111
+
+py36:
+  stage: test
+  image: python:3.6
+  script: tox -e py36-django111
