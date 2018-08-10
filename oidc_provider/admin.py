@@ -62,7 +62,7 @@ class ClientAdmin(admin.ModelAdmin):
             'fields': ('contact_email', 'website_url', 'terms_url', 'logo', 'date_created'),
         }],
         [_(u'Session Management'), {
-            'fields': ('_post_logout_redirect_uris',),
+            'fields': ('_post_logout_redirect_uris', 'backchannel_logout_uri'),
         }],
     ]
     form = ClientForm
@@ -74,6 +74,8 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Code)
 class CodeAdmin(admin.ModelAdmin):
+    raw_id_fields = ['user']
+    list_filter = ['expires_at']
 
     def has_add_permission(self, request):
         return False
@@ -81,6 +83,8 @@ class CodeAdmin(admin.ModelAdmin):
 
 @admin.register(Token)
 class TokenAdmin(admin.ModelAdmin):
+    raw_id_fields = ['user']
+    list_filter = ['expires_at']
 
     def has_add_permission(self, request):
         return False
