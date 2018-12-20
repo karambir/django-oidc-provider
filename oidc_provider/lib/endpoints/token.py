@@ -246,17 +246,10 @@ class TokenEndpoint(object):
     def create_access_token_response_dic(self):
         # See https://tools.ietf.org/html/rfc6749#section-4.3
 
-        session_key = None
-        if self.code and self.code.session:
-            session_key = self.code.session
-        if getattr(self.request, 'session', None):
-            self.request.session['sid'] = session_key
-
         token = create_token(
             self.user,
             self.client,
-            self.params['scope'].split(' '),
-            session_key=session_key)
+            self.params['scope'].split(' '))
 
         id_token_dic = create_id_token(
             token=token,
@@ -266,7 +259,6 @@ class TokenEndpoint(object):
             at_hash=token.at_hash,
             request=self.request,
             scope=token.scope,
-            sid=token.session,
         )
 
         token.id_token = id_token_dic
@@ -284,10 +276,20 @@ class TokenEndpoint(object):
         # See https://tools.ietf.org/html/rfc6749#section-4.4.3
 
         token = create_token(
-            user=None,
+            user=self.client.owner,
             client=self.client,
             scope=self.client.scope)
 
+        id_token_dic = create_id_token(
+            token=token,
+            user=self.client.owner,
+            aud=self.client.client_id,
+            at_hash=token.at_hash,
+            request=self.request,
+            scope=token.scope,
+        )
+
+        token.id_token = id_token_dic
         token.save()
 
         return {

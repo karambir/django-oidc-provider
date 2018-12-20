@@ -793,8 +793,9 @@ class TokenTestCase(TestCase):
     def test_client_credentials_grant_type(self):
         fake_scopes_list = ['scopeone', 'scopetwo', INTROSPECTION_SCOPE]
 
-        # Add scope for this client.
+        # Add scope and owner for this client.
         self.client.scope = fake_scopes_list
+        self.client.owner = self.user
         self.client.save()
 
         post_data = {
@@ -853,8 +854,9 @@ class TokenTestCase(TestCase):
         self.assertEqual('invalid_scope', response_dict['error'])
 
     def test_printing_token_used_by_client_credentials_grant_type(self):
-        # Add scope for this client.
+        # Add scope and owner for this client.
         self.client.scope = ['something']
+        self.client.owner = self.user
         self.client.save()
 
         post_data = {
