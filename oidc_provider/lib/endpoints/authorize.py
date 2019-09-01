@@ -37,6 +37,7 @@ logger = logging.getLogger(__name__)
 
 class AuthorizeEndpoint(object):
     _allowed_prompt_params = {'none', 'login', 'consent', 'select_account'}
+    client_class = Client
 
     def __init__(self, request):
         self.request = request
@@ -86,7 +87,7 @@ class AuthorizeEndpoint(object):
     def validate_params(self):
         # Client validation.
         try:
-            self.client = Client.objects.get(client_id=self.params['client_id'])
+            self.client = self.client_class.objects.get(client_id=self.params['client_id'])
         except Client.DoesNotExist:
             logger.debug('[Authorize] Invalid client identifier: %s', self.params['client_id'])
             raise ClientIdError()
@@ -115,7 +116,8 @@ class AuthorizeEndpoint(object):
             raise AuthorizeError(self.params['redirect_uri'], 'invalid_request', self.grant_type)
 
         # Response type parameter validation.
-        if self.is_authentication and self.params['response_type'] != self.client.response_type:
+        if self.is_authentication \
+                and self.params['response_type'] not in self.client.response_type_values():
             raise AuthorizeError(self.params['redirect_uri'], 'invalid_request', self.grant_type)
 
         # PKCE validation of the transformation method.
