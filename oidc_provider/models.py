@@ -169,7 +169,7 @@ class BaseCodeTokenModel(models.Model):
     client = models.ForeignKey(Client, verbose_name=_(u'Client'), on_delete=models.CASCADE)
     expires_at = models.DateTimeField(verbose_name=_(u'Expiration Date'))
     _scope = models.TextField(default='', verbose_name=_(u'Scopes'))
-    session = models.CharField(max_length=128, null=True, blank=True)
+    session = models.CharField(max_length=128, null=True, blank=True, db_index=True)
 
     class Meta:
         abstract = True
